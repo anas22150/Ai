@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Build Khabeer AI APK
         id: build
@@ -25,13 +25,13 @@ jobs:
         with:
           target: apk
           working-directory: mobile
-          runner-python-version: "3.11"
-          bundled-python-version: "3.11"
+          runner-python-version: "3.12"
+          bundled-python-version: "3.12"
           build-number: ${{ github.run_number }}
           archive-output: false
 
       - name: Upload APK
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: Khabeer-AI-APK
           path: ${{ steps.build.outputs.output-path }}
