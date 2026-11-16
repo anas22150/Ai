@@ -1,54 +1,39 @@
+
 name: Build Khabeer AI APK
 
 on:
   workflow_dispatch:
   push:
-    branches: [ "main", "master" ]
+    branches:
+      - main
 
 permissions:
   contents: read
 
-env:
-  PYTHON_VERSION: "3.11"
-
 jobs:
-  build:
+  build-apk:
+    name: Build Android APK
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
+      - name: Build Khabeer AI APK
+        id: build
+        uses: flet-dev/flet-build-action@v1
         with:
-          distribution: temurin
-          java-version: "17"
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: pip
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
-      - name: Install Flet
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install "flet>=0.28.0"
-
-      - name: Build Android APK
-        working-directory: mobile
-        run: flet build apk --verbose
+          target: apk
+          working-directory: mobile
+          runner-python-version: "3.11"
+          bundled-python-version: "3.11"
+          build-number: ${{ github.run_number }}
+          archive-output: false
 
       - name: Upload APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Khabeer-AI-APK
-          path: mobile/build/**/*.apk
+          path: ${{ steps.build.outputs.output-path }}
           if-no-files-found: error
-          retention-days: 14
+          
